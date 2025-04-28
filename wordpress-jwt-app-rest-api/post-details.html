@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Post Details</title></head>
+<body>
+  <div id="post"></div>
+  <script src="config.js"></script>
+  <script>
+    const postId = new URLSearchParams(window.location.search).get('id');
+    fetch(`${apiBase}/posts/${postId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(post => {
+      const container = document.getElementById('post');
+      container.innerHTML = `<h1>${post.title.rendered}</h1><div>${post.content.rendered}</div>`;
+    });
+  </script>
+</body>
+</html>

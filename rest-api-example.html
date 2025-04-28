@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WordPress Posts Viewer</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>WordPress Blog Posts</h1>
+  <div id="posts-container"></div>
+
+  <script>
+    const username = 'admin';
+    const password = 'LDR0 iqTo C0DF HOZl Jyi3 qZBM'; // e.g. abcd efgh ijkl mnop
+    const token = btoa(`${username}:${password}`);
+
+    fetch('http://rest-api.local/wp-json/wp/v2/posts', {
+      headers: {
+        'Authorization': `Basic ${token}`
+      }
+    })
+    .then(response => response.json())
+    .then(posts => {
+      const container = document.getElementById('posts-container');
+
+      posts.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h2>${post.title.rendered}</h2>
+          <div>${post.excerpt.rendered}</div>
+         <a href="post-details.html?id=${post.id}" target="_blank">Read More</a>
+        `;
+        container.appendChild(card);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching posts:', error);
+    });
+  </script>
+
+</body>
+</html>
