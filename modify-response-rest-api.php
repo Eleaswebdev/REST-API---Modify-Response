@@ -42,7 +42,45 @@ add_filter('rest_prepare_post', function($response, $post, $request) {
 // 4. Modify Custom Post Types
 add_filter('rest_prepare_book', function($response, $post, $request) {
     // Modify the response for a custom post type
-    $response->data['custom_field'] = 'This is a custom field for my custom post type';
+    $response->data['custom_field'] = 'Book Post Type';
+
+    // Adding custom link
+        // Get the book's custom metadata (like author or related books)
+        $author_id = get_post_meta($post->ID, 'author_id', true);  // Assuming you store author_id in post meta
+
+        // You can use this author_id to generate a custom author URL
+        if ($author_id) {
+            $author_url = get_permalink($author_id);  // Assuming it's a post or page
+        } else {
+            $author_url = null;
+        }
+    
+        // You can also add links to related books
+        $related_books = get_post_meta($post->ID, 'related_books', true);  // Assuming related books are stored in an array
+    
+        // Add custom links to the response using add_link()
+        // Add the author link
+        if ($author_url) {
+            $author_name = get_the_title($author_id);  // Get author name
+            $author_date = get_the_date('', $author_id);  // Get author post publication date
+    
+            $response->add_link('author', $author_url, [
+                'title' => $author_name,
+                'published_date' => $author_date,
+                'embeddable' => true,  // Mark as embeddable
+                'post_type' => 'author',
+            ]);
+        }
+    
+        // Add the related books links
+        if ($related_books) {
+            foreach ($related_books as $related_book_id) {
+                $related_book_url = get_permalink($related_book_id);
+                $response->add_link('related_books', $related_book_url);  // Adding 'related_books' links
+            }
+        }
+
+        
 
     return $response;
 }, 10, 3);
